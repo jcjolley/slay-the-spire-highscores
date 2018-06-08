@@ -3,7 +3,7 @@ var url = "mongodb://localhost:27017/slay-the-spire";
 import express = require('express');
 import bodyParser = require('body-parser');
 import uuid = require('uuidv4');
-
+import jwt = require('jsonwebtoken');
 export function setupServer() {
 
 
@@ -104,8 +104,20 @@ async function createUser(username: string, password: string) {
         dbo.collection("users").insertOne({ username, password }, (err, res) => {
           if (err) reject(err);
           console.log(`Created user: ${username} ${JSON.stringify(res)} `)
-          db.close();
-          resolve(true);
+
+          dbo.collection("users").findOne({ username, password }, (err, res) => {
+            if (err) reject(err);
+            if (!!res) {
+              const token = jwt.sign({
+                expiresIn: "30d",
+                payload: JSON.stringify(res)
+              }, 'youWishILeftTheSecretHere')
+              res(token);
+            }
+            db.close();
+
+          })
+
         })
       } else {
         resolve(false);
@@ -122,8 +134,14 @@ async function login(username: string, password: string) {
       dbo.collection("users").findOne({ username, password }, (err, res) => {
         if (err) reject(err);
         console.log(`Result of Login attempt:  ${JSON.stringify(res)} `)
+        if (!!res) {
+          const token = jwt.sign({
+            expiresIn: "30d",
+            payload: JSON.stringify(res)
+          }, 'youWishILeftTheSecretHere')
+          resolve(token);
+        }
         db.close();
-        resolve(res);
       })
     });
   })
