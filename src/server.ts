@@ -55,7 +55,7 @@ export function setupServer() {
 
   app.post('/slay-the-spire/add-score', async (req, res, next) => {
     const { username, score, character, level, daily, seed } = req.body;
-    res.send(await addScore(username, score, character, level, daily));
+    res.send(await addScore(username, score, character, level, daily, seed));
   })
 
   app.get('/slay-the-spire/get-scores', async (req, res, next) => {
