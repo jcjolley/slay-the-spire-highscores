@@ -54,7 +54,7 @@ export function setupServer() {
   })
 
   app.post('/slay-the-spire/add-score', async (req, res, next) => {
-    const { username, score, character, level, daily } = req.body;
+    const { username, score, character, level, daily, seed } = req.body;
     res.send(await addScore(username, score, character, level, daily));
   })
 
@@ -64,7 +64,7 @@ export function setupServer() {
   return app;
 }
 
-async function addScore(username, score, character, level = 0, daily = false) {
+async function addScore(username, score, character, level = 0, daily = false, seed = '') {
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, async function (err, db) {
       if (err) throw err;
@@ -75,6 +75,7 @@ async function addScore(username, score, character, level = 0, daily = false) {
         character,
         level,
         daily,
+        seed,
         timestamp: Date.now()
       }
       dbo.collection("scores").insertOne(dbScore, (err, res) => {
