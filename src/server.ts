@@ -1,5 +1,5 @@
 var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://jcjolley.com:27017/slay-the-spire";
+var url = "mongodb://localhost:27017/slay-the-spire";
 import express = require('express');
 import bodyParser = require('body-parser');
 import uuid = require('uuidv4');
