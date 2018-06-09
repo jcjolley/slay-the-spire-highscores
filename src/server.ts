@@ -169,8 +169,9 @@ async function getScores() {
 async function setupWss() {
   wss.on('connection', (ws) => {
     chatMessages.slice(-10).forEach(x => {
-      broadcast(wss, ws, x)
+      ws.send(JSON.stringify(x));
     })
+
     ws.on('message', (msg: string) => {
       const { username, message } = JSON.parse(msg);
       const chat = { username, message, time: Date.now() }
