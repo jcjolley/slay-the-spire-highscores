@@ -1,5 +1,6 @@
-var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/slay-the-spire";
+const mongo = require('mongodb');
+const MongoClient = mongo.MongoClient;
+const url = "mongodb://localhost:27017/slay-the-spire";
 import express = require('express');
 import bodyParser = require('body-parser');
 import uuid = require('uuidv4');
@@ -86,6 +87,7 @@ export function setupServer() {
 }
 
 async function removeScore({ _id }) {
+  _id = new mongo.ObjectID(_id);
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, function (err, db) {
       if (err) reject(err);
@@ -165,6 +167,7 @@ async function addSession({ character, seed, notes, level }) {
 }
 
 async function updateSession({ _id, scores, notes, active }) {
+  _id = new mongo.ObjectID(_id);
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, async function (err, db) {
       if (err) throw err;
