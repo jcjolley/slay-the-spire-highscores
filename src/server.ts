@@ -70,11 +70,11 @@ export function setupServer() {
     res.send(await getStsSessions())
   })
 
-  app.get('/slay-the-spire/add-session', async (req, res, next) => {
+  app.post('/slay-the-spire/add-session', async (req, res, next) => {
     res.send(await addSession(req.body))
   })
 
-  app.get('/slay-the-spire/update-session', async (req, res, next) => {
+  app.post('/slay-the-spire/update-session', async (req, res, next) => {
     res.send(await updateSession(req.body))
   })
   return app;
