@@ -4,9 +4,13 @@ import express = require('express');
 import bodyParser = require('body-parser');
 import uuid = require('uuidv4');
 import jwt = require('jsonwebtoken');
+import WebSocket = require('ws');
+
+const chatMessages: any[] = [{ username: 'Server', message: 'Welcome to Spire chat', time: Date.now() }];
+
+const wss = new WebSocket.Server({ port: 3003 });
 export function setupServer() {
-
-
+  setupWss();
   const app = express();
 
   app.use(function (req, res, next) {
@@ -159,5 +163,35 @@ async function getScores() {
         db.close();
       })
     })
+  })
+}
+
+async function setupWss() {
+  wss.on('connection', (ws) => {
+    chatMessages.slice(-10).forEach(x => {
+      broadcast(wss, ws, x)
+    })
+    ws.on('message', (msg: string) => {
+      const { username, message } = JSON.parse(msg);
+      const chat = { username, message, time: Date.now() }
+      chatMessages.push(chat);
+      broadcast(wss, ws, chat);
+    })
+  })
+}
+
+function broadcastOthers(wss, ws: any, msg: any) {
+  wss.clients.forEach((client: any) => {
+    if (client != ws && client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(msg))
+    }
+  })
+}
+
+function broadcast(wss, ws: any, msg: any) {
+  wss.clients.forEach((client: any) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(msg))
+    }
   })
 }
