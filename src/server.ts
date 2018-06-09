@@ -93,11 +93,11 @@ async function createUser(username: string, password: string) {
     MongoClient.connect(url, async function (err, db) {
       if (err) throw err;
       const dbo = db.db("users")
-      const userExists = await new Promise(resolve => {
+      const userExists = await new Promise(innerResolve => {
         dbo.collection("users").findOne({ username }, (err, res) => {
           if (err) reject(err);
           console.log("checking if user exists: ", res);
-          resolve(res);
+          innerResolve(res);
         })
       });
       if (!userExists) {
@@ -112,7 +112,7 @@ async function createUser(username: string, password: string) {
                 expiresIn: 1000 * 60 * 60 * 24,
               }, 'youWishILeftTheSecretHere')
               const user = { username, userid: res._id }
-              res({ user, token });
+              resolve({ user, token });
             }
             db.close();
 
