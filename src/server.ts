@@ -111,7 +111,8 @@ async function createUser(username: string, password: string) {
               const token = jwt.sign({
                 expiresIn: "30d",
               }, 'youWishILeftTheSecretHere')
-              res({ user: res, token });
+              const user = { username, userid: res._id }
+              res({ user, token });
             }
             db.close();
 
@@ -137,7 +138,8 @@ async function login(username: string, password: string) {
           const token = jwt.sign({
             expiresIn: "30d",
           }, 'youWishILeftTheSecretHere')
-          resolve({ user: res, token });
+          const user = { username, userId: res._id }
+          resolve({ user, token });
         }
         db.close();
       })
