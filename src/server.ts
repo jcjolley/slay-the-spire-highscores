@@ -137,8 +137,9 @@ async function login(username: string, password: string) {
         if (!!res) {
           const token = jwt.sign({
             expiresIn: "30d",
-          }, 'youWishILeftTheSecretHere')
+          }, 'youWishILeftTheSecretHere');
           const user = { username, userId: res._id }
+          console.log('Token is: ', JSON.stringify(token));
           resolve({ user, token });
         }
         db.close();
