@@ -94,7 +94,9 @@ async function getStsSessions() {
             dbo.collection("scores").find({ character, level, seed }).toArray((err, res) => {
               if (err) throw err;
               if (!!res) {
-                const scores = res.map(x => { return { username: x.username, score: x.score } })
+                const scores = res
+                  .map(x => { return { username: x.username, score: x.score } })
+                  .sort((a, b) => b.score - a.score);
                 resolve(scores);
               }
               reject(res);
@@ -119,6 +121,7 @@ async function addSession({ character, seed, notes, level }) {
         seed,
         notes,
         level,
+        active: true,
         timestamp: Date.now()
       }
       const sessionExists = await new Promise(innerResolve => {
