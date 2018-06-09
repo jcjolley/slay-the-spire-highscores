@@ -103,15 +103,14 @@ async function createUser(username: string, password: string) {
       if (!userExists) {
         dbo.collection("users").insertOne({ username, password }, (err, res) => {
           if (err) reject(err);
-          console.log(`Created user: ${username} ${JSON.stringify(res)} `)
-
-          dbo.collection("users").findOne({ username, password }, (err, res) => {
-            if (err) reject(err);
-            if (!!res) {
+          dbo.collection("users").findOne({ username, password }, (innerErr, innerRes) => {
+            if (innerErr) reject(innerErr);
+            console.log('Created user: ', JSON.stringify(innerRes));
+            if (!!innerRes) {
               const token = jwt.sign({
                 expiresIn: 1000 * 60 * 60 * 24,
               }, 'youWishILeftTheSecretHere')
-              const user = { username, userid: res._id }
+              const user = { username, userid: innerRes._id }
               resolve({ user, token });
             }
             db.close();
