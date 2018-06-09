@@ -85,9 +85,23 @@ async function getStsSessions() {
     MongoClient.connect(url, function (err, db) {
       if (err) throw err;
       const dbo = db.db('slay-the-spire');
-      dbo.collection("sessions").find({}).toArray((err, res) => {
+      dbo.collection("sessions").find({}).toArray(async (err, res) => {
         if (err) throw err;
         console.log(`sessions:  ${JSON.stringify(res)}`)
+        for (const session of res) {
+          const { character, level, seed } = session;
+          const scores = await new Promise((resolve, reject) => {
+            dbo.collection("scores").find({ character, level, seed }).toArray((err, res) => {
+              if (err) throw err;
+              if (!!res) {
+                const scores = res.map(x => { return { username: x.username, score: x.score } })
+                resolve(scores);
+              }
+              reject(res);
+            })
+          })
+          session.scores = scores;
+        }
         resolve(res);
         db.close();
       })
@@ -95,7 +109,7 @@ async function getStsSessions() {
   })
 }
 
-async function addSession({ character, seed, notes, scores, level }) {
+async function addSession({ character, seed, notes, level }) {
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, async function (err, db) {
       if (err) throw err;
