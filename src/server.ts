@@ -109,7 +109,7 @@ async function createUser(username: string, password: string) {
             if (err) reject(err);
             if (!!res) {
               const token = jwt.sign({
-                expiresIn: "30d",
+                expiresIn: 1000 * 60 * 60 * 24,
               }, 'youWishILeftTheSecretHere')
               const user = { username, userid: res._id }
               res({ user, token });
@@ -136,7 +136,7 @@ async function login(username: string, password: string) {
         console.log(`Result of Login attempt:  ${JSON.stringify(res)} `)
         if (!!res) {
           const token = jwt.sign({
-            expiresIn: "30d",
+            expiresIn: 1000 * 60 * 60 * 24,
           }, 'youWishILeftTheSecretHere');
           const user = { username, userId: res._id }
           console.log('Token is: ', JSON.stringify(token));
