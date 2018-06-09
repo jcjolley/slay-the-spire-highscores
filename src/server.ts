@@ -141,7 +141,7 @@ async function updateSession({ _id, scores, notes, active }) {
           if (scores) update.scores = scores;
           if (notes) update.notes = notes;
           if (active !== undefined) update.active = active;
-          dbo.collection("sessions").update({ _id }, update)
+          dbo.collection("sessions").update({ _id }, { $set: update })
         }
         console.log("checking if session exists", res);
       })
