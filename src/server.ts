@@ -90,7 +90,10 @@ async function removeScore({ _id }) {
     MongoClient.connect(url, function (err, db) {
       if (err) reject(err);
       const dbo = db.db('slay-the-spire');
-      dbo.collection("scores").remove({ _id })
+      dbo.collection("scores").remove({ _id }, (err, res) => {
+        if (err) throw reject(err);
+        resolve(res);
+      })
     });
   });
 }
