@@ -110,7 +110,7 @@ async function createUser(username: string, password: string) {
               const token = jwt.sign({
                 expiresIn: 1000 * 60 * 60 * 24,
               }, 'youWishILeftTheSecretHere')
-              const user = { username, userid: innerRes._id }
+              const user = { username, userId: innerRes._id }
               resolve({ user, token });
             }
             db.close();
