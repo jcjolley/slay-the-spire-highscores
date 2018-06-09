@@ -110,9 +110,8 @@ async function createUser(username: string, password: string) {
             if (!!res) {
               const token = jwt.sign({
                 expiresIn: "30d",
-                payload: JSON.stringify(res)
               }, 'youWishILeftTheSecretHere')
-              res(token);
+              res({ user: res, token });
             }
             db.close();
 
@@ -137,9 +136,8 @@ async function login(username: string, password: string) {
         if (!!res) {
           const token = jwt.sign({
             expiresIn: "30d",
-            payload: JSON.stringify(res)
           }, 'youWishILeftTheSecretHere')
-          resolve(token);
+          resolve({ user: res, token });
         }
         db.close();
       })
