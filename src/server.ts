@@ -65,7 +65,88 @@ export function setupServer() {
   app.get('/slay-the-spire/get-scores', async (req, res, next) => {
     res.send(await getScores())
   })
+
+  app.get('/slay-the-spire/get-sessions', async (req, res, next) => {
+    res.send(await getStsSessions())
+  })
+
+  app.get('/slay-the-spire/add-session', async (req, res, next) => {
+    res.send(await addSession(req.body))
+  })
+
+  app.get('/slay-the-spire/update-session', async (req, res, next) => {
+    res.send(await updateSession(req.body))
+  })
   return app;
+}
+
+async function getStsSessions() {
+  return new Promise((resolve, reject) => {
+    MongoClient.connect(url, function (err, db) {
+      if (err) throw err;
+      const dbo = db.db('slay-the-spire');
+      dbo.collection("sessions").find({}).toArray((err, res) => {
+        if (err) throw err;
+        console.log(`sessions:  ${JSON.stringify(res)}`)
+        resolve(res);
+        db.close();
+      })
+    })
+  })
+}
+
+async function addSession({ character, seed, notes, scores, level }) {
+  return new Promise((resolve, reject) => {
+    MongoClient.connect(url, async function (err, db) {
+      if (err) throw err;
+      const dbo = db.db("slay-the-spire");
+      const session = {
+        character,
+        seed,
+        notes,
+        level,
+        timestamp: Date.now()
+      }
+      const sessionExists = await new Promise(innerResolve => {
+        dbo.collection("sessions").findOne({ character, seed, level }, (err, res) => {
+          if (err) reject(err);
+          console.log("checking if session exists", res);
+          innerResolve(res);
+        })
+      });
+
+      if (!sessionExists) {
+        dbo.collection("sessions").insertOne(session, (err, res) => {
+          if (err) reject(err);
+          console.log(`Added session: ${JSON.stringify(session)} `);
+          resolve(res);
+          db.close();
+        })
+      } else {
+        reject(`Session for ${character} ${seed} ascension ${level} already exists.`);
+      }
+    })
+  })
+}
+
+async function updateSession({ _id, scores, notes, active }) {
+  return new Promise((resolve, reject) => {
+    MongoClient.connect(url, async function (err, db) {
+      if (err) throw err;
+      const dbo = db.db("slay-the-spire");
+      dbo.collection("sessions").findOne({ _id }, (err, res) => {
+        if (err) reject(err);
+        if (!!res && (scores || notes || active !== undefined)) {
+          const update: any = {};
+          if (scores) update.scores = scores;
+          if (notes) update.notes = notes;
+          if (active !== undefined) update.active = active;
+          dbo.collection("sessions").update({ _id }, update)
+        }
+        console.log("checking if session exists", res);
+      })
+    });
+  });
 }
 
 async function addScore(username, score, character, level = 0, daily = false, seed = '') {
