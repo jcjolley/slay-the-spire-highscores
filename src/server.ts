@@ -62,6 +62,10 @@ export function setupServer() {
     res.send(await addScore(username, score, character, level, daily, seed));
   })
 
+  app.post('/slay-the-spire/remove-score', async (req, res, next) => {
+    res.send(await removeScore(req.body));
+  })
+
   app.get('/slay-the-spire/get-scores', async (req, res, next) => {
     res.send(await getScores())
   })
@@ -77,7 +81,21 @@ export function setupServer() {
   app.post('/slay-the-spire/update-session', async (req, res, next) => {
     res.send(await updateSession(req.body))
   })
+
   return app;
+}
+
+async function removeScore({ _id }) {
+  return new Promise((resolve, reject) => {
+    MongoClient.connect(url, function (err, db) {
+      if (err) reject(err);
+      const dbo = db.db('slay-the-spire');
+      dbo.collection("scores").remove({ _id }, (err, res) => {
+        if (err) throw reject(err);
+        resolve(res);
+      })
+    });
+  });
 }
 
 async function getStsSessions() {
