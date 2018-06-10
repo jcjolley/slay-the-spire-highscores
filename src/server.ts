@@ -139,7 +139,7 @@ async function addSession({ character, seed, notes, level }) {
       const session = {
         character,
         seed,
-        notes,
+        notes: Array.isArray(notes) ? notes : [],
         level,
         active: true,
         timestamp: Date.now()
