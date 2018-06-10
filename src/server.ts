@@ -170,7 +170,7 @@ async function updateSession({ _id, scores, notes, active }) {
   _id = new mongo.ObjectID(_id);
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, async function (err, db) {
-      if (err) throw err;
+      if (err) reject(err);
       const dbo = db.db("slay-the-spire");
       dbo.collection("sessions").findOne({ _id }, (err, res) => {
         if (err) reject(err);
@@ -179,7 +179,10 @@ async function updateSession({ _id, scores, notes, active }) {
           if (scores) update.scores = scores;
           if (notes) update.notes = notes;
           if (active !== undefined) update.active = active;
-          dbo.collection("sessions").update({ _id }, { $set: update })
+          dbo.collection("sessions").update({ _id }, { $set: update }, (err, res) => {
+            if (err) reject(err)
+            resolve(res);
+          })
         }
         console.log("checking if session exists", res);
       })
