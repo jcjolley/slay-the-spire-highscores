@@ -25,6 +25,8 @@
     "body-parser": "^1.18.3",
     "commander": "^2.15.1",
     "express": "^4.16.3",
+    "helmet": "^3.12.1",
+    "https": "^1.0.0",
     "jsonwebtoken": "^8.2.2",
     "mongodb": "^3.0.10",
     "murmurhash-native": "^3.2.3",
