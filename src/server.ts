@@ -93,7 +93,7 @@ async function removeScore({ _id }) {
       if (err) reject(err);
       const dbo = db.db('slay-the-spire');
       dbo.collection("scores").remove({ _id }, (err, res) => {
-        if (err) throw reject(err);
+        if (err) reject(err);
         resolve(res);
       })
     });
@@ -103,16 +103,16 @@ async function removeScore({ _id }) {
 async function getStsSessions() {
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, function (err, db) {
-      if (err) throw err;
+      if (err) reject(err);
       const dbo = db.db('slay-the-spire');
       dbo.collection("sessions").find({}).toArray(async (err, res) => {
-        if (err) throw err;
+        if (err) reject(err);
         console.log(`sessions:  ${JSON.stringify(res)}`)
         for (const session of res) {
           const { character, level, seed } = session;
           const scores = await new Promise((resolve, reject) => {
             dbo.collection("scores").find({ character, level, seed }).toArray((err, res) => {
-              if (err) throw err;
+              if (err) reject(err);
               if (!!res) {
                 const scores = res
                   .map(x => { return { username: x.username, score: x.score } })
@@ -134,7 +134,7 @@ async function getStsSessions() {
 async function addSession({ character, seed, notes, level }) {
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, async function (err, db) {
-      if (err) throw err;
+      if (err) reject(err);
       const dbo = db.db("slay-the-spire");
       const session = {
         character,
@@ -193,7 +193,7 @@ async function updateSession({ _id, scores, notes, active }) {
 async function addScore(username, score, character, level = 0, daily = false, seed = '') {
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, async function (err, db) {
-      if (err) throw err;
+      if (err) reject(err);
       const dbo = db.db("slay-the-spire");
       const dbScore = {
         username,
@@ -217,7 +217,7 @@ async function addScore(username, score, character, level = 0, daily = false, se
 async function createUser(username: string, password: string) {
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, async function (err, db) {
-      if (err) throw err;
+      if (err) reject(err);
       const dbo = db.db("users")
       const userExists = await new Promise(innerResolve => {
         dbo.collection("users").findOne({ username }, (err, res) => {
@@ -254,7 +254,7 @@ async function createUser(username: string, password: string) {
 async function login(username: string, password: string) {
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, function (err, db) {
-      if (err) throw err;
+      if (err) reject(err);
       const dbo = db.db("users")
       dbo.collection("users").findOne({ username, password }, (err, res) => {
         if (err) reject(err);
@@ -276,10 +276,10 @@ async function login(username: string, password: string) {
 async function getScores() {
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, function (err, db) {
-      if (err) throw err;
+      if (err) reject(err);
       const dbo = db.db('slay-the-spire');
       dbo.collection("scores").find({}).toArray((err, res) => {
-        if (err) throw err;
+        if (err) reject(err);
         console.log(`Scores:  ${JSON.stringify(res)}`)
         resolve(res);
         db.close();
