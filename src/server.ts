@@ -297,8 +297,10 @@ async function setupWss() {
     ws.on('message', (msg: string) => {
       const { username, message } = JSON.parse(msg);
       const chat = { username, message, time: Date.now() }
-      chatMessages.push(chat);
-      broadcast(wss, ws, chat);
+      if (!chatMessages.map(x => x.message).includes(chat.message)) {
+        chatMessages.push(chat);
+        broadcast(wss, ws, chat);
+      }
     })
   })
 }
