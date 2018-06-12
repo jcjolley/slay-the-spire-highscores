@@ -299,6 +299,9 @@ async function setupWss() {
       const chat = { username, message, time: Date.now() }
       if (!chatMessages.map(x => x.message).includes(chat.message)) {
         chatMessages.push(chat);
+        while (chatMessages.length > 15) {
+          chatMessages.shift();
+        }
         broadcast(wss, ws, chat);
       }
     })
