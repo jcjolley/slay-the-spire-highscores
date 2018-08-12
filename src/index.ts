@@ -9,13 +9,13 @@ program
   .parse(process.argv)
 
 
-const options = {
-  cert: fs.readFileSync('/etc/letsencrypt/live/spire.jcjolley.com/fullchain.pem'),
-  key: fs.readFileSync('/etc/letsencrypt/live/spire.jcjolley.com/privkey.pem'),
-}
+// const options = {
+//   cert: fs.readFileSync('/etc/letsencrypt/live/spire.jcjolley.com/fullchain.pem'),
+//   key: fs.readFileSync('/etc/letsencrypt/live/spire.jcjolley.com/privkey.pem'),
+// }
 
 const app = setupServer();
 const port = program.port || 3002;
 app.listen(port);
-https.createServer(options, app).listen(8443);
+//https.createServer(options, app).listen(8443);
 console.log(`Server started on port ${port}`);
