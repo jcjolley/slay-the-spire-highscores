@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "build": "tsc",
+    "build": "tsc && ncp static dist/static",
     "stop": "pm2 stop \"slay-the-spire-server\"",
     "deploy": "pm2 start dist/index.js --name=\"slay-the-spire-server\"",
     "dev": "chokidar \"src/**/*\" -c \"npm run build && npm run start\"",
@@ -30,6 +30,7 @@
     "jsonwebtoken": "^8.2.2",
     "mongodb": "^3.0.10",
     "murmurhash-native": "^3.2.3",
+    "ncp": "^2.0.0",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "uuidv4": "^1.0.0",
